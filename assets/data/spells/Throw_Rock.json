@@ -1,0 +1,17 @@
+{
+  "name": "Throw Rock",
+  "description": "It's a little pointy. Deals 2 damage.",
+  "mana": {
+    "Fire": 2,
+    "Dark": 2
+  },
+  "effect": "Damage_Enemy",
+  "args": {
+    "lifespan": {
+      "min": 0.75,
+      "max": 1.25
+    },
+    "damage": 2,
+    "colour": "0x909090"
+  }
+}

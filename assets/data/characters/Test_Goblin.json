@@ -1,0 +1,13 @@
+{
+  "name": "Test Goblin",
+  "level": 1,
+  "health": 20,
+  "mana": {
+    "Fire": 30,
+    "Water": 25,
+    "Earth": 20,
+    "Light": 25,
+    "Dark": 15
+  },
+  "spells": [ "Throw_Rock", "Warcry" ]
+}

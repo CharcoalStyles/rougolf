@@ -1,0 +1,145 @@
+// Damage_Enemy.hxscript
+
+// Damages the enemy's health by the `damage` argument.
+
+// Args from the spell:
+//   Required arguments:
+//   - damage:Int The amount of damage to be dealt
+//   optional arguments:
+//   - lifespan:{min:Float, max:Float} The lifespan of the particles
+//   - colour:String The colour of the particles
+//   - trailType:Int The type of trail to be used
+//     - 0 = None 
+//     - 1 = Constant (emits a particle from the main emitter every frame?)
+//   - explosion:Bool Whether to add an explosion effect
+//   - easeName:String The name of the FlxEase function to use
+
+
+var origin = tools.centreRect(self.sidebar.spellUis[0].rect);
+var target = tools.centreRect(enemy.sidebar.healthText.getScreenBounds());
+
+var p = emitter.emit(self.x, self.y);
+
+var lifespan = 2.5;
+if (args.lifespan != null)
+{
+  lifespan = tools.random.float(args.lifespan.min, args.lifespan.max);
+}
+
+var colour = 0xffff0000;
+if (args.colour != null)
+{
+  colour = tools.stringToColor(args.colour);
+}
+var trailType = 0;
+if (args.trailType != null)
+{
+  trailType = args.trailType;
+}
+
+var explosion = false;
+if (args.explosion != null)
+{
+  explosion = args.explosion;
+}
+
+var ease = "linear";
+if (args.ease != null)
+{
+  ease = args.ease;
+}
+
+
+p.setEffectStates([
+  {
+    lifespan: () -> lifespan,
+    target: (p) -> {
+      origin: tools.getPoint(origin.x, origin.y),
+      target: tools.getPoint(target.x, target.y),
+      easeName: ease
+    },
+    angularVelocityExtended: () -> [
+      {
+        t: 0,
+        value: tools.random.float(45, 90),
+      }
+    ],
+    colourExtended: () -> [
+      {
+        t: 0,
+        value: colour
+      }
+    ],
+    customUpdate: (p) ->
+    {
+      if (trailType == 0){
+        return;
+      }
+
+        for (i in 0...2)
+        {
+          var p2 = emitter.emit(p.x, p.y);
+          p2.setEffectStates([
+            tools.burstEmit(colour, 50, {
+              lifespan: () -> 0.5,
+              scaleExtended: () -> [
+                {
+                  t: 0,
+                  value: tools.getPoint(0.5, 0.5),
+                }
+              ],
+              alphaExtended: () -> [
+                {
+                  t: 0,
+                  value: 1
+                },
+                {
+                  t: 1,
+                  value: 0
+                },
+              ]
+            })
+          ]);
+        }
+    },
+    onComplete: (p) ->
+    {
+      effectCallback({
+        adjustEnemyHealth: 0 -args.damage
+      });
+
+      if (explosion){
+        for (i in 0...20)
+        {
+          var p3 = emitter.emit(p.x, p.y);
+          p3.setEffectStates([
+            tools.burstEmit(colour, 250, {
+              lifespan: () -> 0.75,
+              alphaExtended: () -> [
+                {
+                  t: 0,
+                  value: 1
+                },
+                {
+                  t: 0.75,
+                  value: 0.5
+                },
+                {
+                  t: 1,
+                  value: 0
+                },
+              ]
+            })
+          ]);
+        }
+      }
+    }
+  }
+]);
+
+var ret = {
+  delay: lifespan * 1.2,
+  nextState: 0
+}
+
+ret;
