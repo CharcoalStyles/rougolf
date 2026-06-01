@@ -10,15 +10,18 @@ import utils.GlobalState;
 
 class MainMenuState extends FlxState
 {
-	var gameName:String = "Game";
+	var gameName:String = "Rogolf";
 	var globalState:GlobalState;
+
+	var showSplash:Bool = true;
+	var controllerCaptureText:FlxText;
+	var menu:CsMenu;
 
 	override public function create()
 	{
 		super.create();
 		globalState = new GlobalState();
 		FlxG.plugins.addPlugin(globalState);
-
 		FlxG.mouse.visible = true;
 
 		var text = generateTitle();
@@ -26,7 +29,7 @@ class MainMenuState extends FlxState
 		text.x = (FlxG.width - text.width) / 2;
 		text.y = 96;
 
-		var menu = new CsMenu(FlxG.width / 2, FlxG.height / 2, FlxTextAlign.CENTER, {
+		menu = new CsMenu(FlxG.width / 2, FlxG.height / 2, FlxTextAlign.CENTER, {
 			keyboard: true,
 			mouse: true,
 			gamepad: true,
@@ -34,43 +37,44 @@ class MainMenuState extends FlxState
 		});
 		var mainPage = menu.createPage("Main");
 
-		mainPage.addItem("New Battle", () ->
+		mainPage.addItem("New Game", () ->
 		{
-			FlxG.switchState(() -> new PlayState());
+			FlxG.switchState(PlayState.new);
 		});
 		mainPage.addItem("Toggle Fullscreen", () -> FlxG.fullscreen = !FlxG.fullscreen);
 
-		mainPage.show(true);
+		// add(menu);
 
-		add(menu);
-
-		globalState.createEmitter();
-		add(globalState.emitter.activeMembers);
+		controllerCaptureText = new FlxText(0, FlxG.height - 32, FlxG.width, "Press any button to start");
+		controllerCaptureText.setFormat(null, 16, FlxColor.WHITE, FlxTextAlign.CENTER);
+		add(controllerCaptureText);
 	}
 
-	function generateText(text:String, targetColour:FlxColor, onClick:(text:SplitText) -> Void)
+	override public function update(elapsed:Float):Void
 	{
-		var text = new SplitText(0, 0, text);
-		text.color = 0xff000000;
-		text.borderColor = 0xffffffff;
-		text.borderQuality = 4;
-		text.borderSize = 4;
-		text.borderStyle = OUTLINE;
-		text.onMouseIn = () ->
-		{
-			text.animateWave(36, 0.075, 0.6, true);
-			text.animateColour(targetColour, 0.075, 0.6);
-		}
-		text.onMouseOut = () ->
-		{
-			text.stopAnimation();
-		}
-		text.onClick = () ->
-		{
-			onClick(text);
-		};
+		super.update(elapsed);
 
-		return text;
+		if (showSplash)
+		{
+			var gamepad = FlxG.gamepads.anyButton();
+			if (FlxG.keys.firstJustPressed() != -1 || FlxG.mouse.justPressed || gamepad)
+			{
+				showSplash = false;
+				remove(controllerCaptureText);
+				add(menu);
+
+				if (gamepad)
+				{
+					FlxG.log.add("Controller input detected in menu");
+					globalState.usingController = true;
+				}
+			}
+		}
+		else
+		{
+			// Normal menu update logic
+			super.update(elapsed);
+		}
 	}
 
 	function generateTitle()
@@ -82,7 +86,7 @@ class MainMenuState extends FlxState
 		text.borderSize = 4;
 		text.borderStyle = OUTLINE;
 		text.animateWave(5, 0.1, 1.5, false);
-		text.animateColourByArray([0xffa05080, 0xff80a050, 0xff5080a0], 0.075, 0.6,);
+		text.animateColourByArray([0xffcbeb74, 0xff88ff88, 0xff11b864], 0.075, 0.6,);
 
 		return text;
 	}

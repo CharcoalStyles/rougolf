@@ -1,0 +1,14 @@
+- [ ] Golf Game
+  - [ ] Player entity
+  - [ ] Ball entity
+  - [ ] Hole entity
+  - [ ] Test play state
+    - [ ] Spawn hole
+    - [ ] Spawn ball
+    - [ ] Spawn player
+    - [ ] Move player
+    - [ ] Move ball
+    - [ ] Test collision
+      - [ ] Test player-ball collision
+      - [ ] Test ball-hole collision
+- [ ] Rougelite game mechanics

@@ -1,21 +1,16 @@
 package states;
 
+import entities.Player;
 import flixel.FlxG;
 import flixel.FlxState;
 import states.subStates.PauseState;
 import utils.GlobalState;
 
-enum Play_State
-{
-	Idle;
-	BoardMatching;
-	SpellEffect;
-	GameOver;
-}
-
 class PlayState extends FlxState
 {
 	var globalState:GlobalState;
+
+  var player:Player;
 
 	public function new()
 	{
@@ -29,6 +24,9 @@ class PlayState extends FlxState
 		FlxG.camera.antialiasing = true;
 
 		globalState = FlxG.plugins.get(GlobalState);
+
+    player = new Player(0, 0);
+    add(player);
 	}
 
 	override public function update(elapsed:Float)
@@ -37,7 +35,7 @@ class PlayState extends FlxState
 
 		if (FlxG.keys.justPressed.ESCAPE)
 		{
-			this.subState = new PauseState(globalState.controllerId);
+			this.subState = new PauseState();
 			this.subState.create();
 			this.subState.closeCallback = () ->
 			{

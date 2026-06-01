@@ -9,10 +9,9 @@ class PauseState extends FlxSubState
 {
 	var controllerId:Int;
 
-	public function new(cId:Int)
+	public function new()
 	{
 		super(0xff101010);
-		controllerId = cId;
 	}
 
 	public override function create():Void
